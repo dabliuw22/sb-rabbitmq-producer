@@ -3,6 +3,7 @@ package com.leysoft.service.imple;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,10 @@ public class SenderServiceImp implements SenderService {
         String messageInfo = "Error";
         try {
             messageInfo = objectMapper.writeValueAsString(message);
-        } catch (JsonProcessingException e) {
+            rabbitTemplate.convertAndSend(exchange.getName(), routingKey, message);
+        } catch (JsonProcessingException | AmqpException e) {
             LOGGER.error("{}", e.getMessage());
         }
-        rabbitTemplate.convertAndSend(exchange.getName(), routingKey, message);
         LOGGER.info("send message -> {}", messageInfo);
         return messageInfo;
     }
