@@ -35,12 +35,13 @@ public class SenderServiceImp implements SenderService {
 
     @Override
     public String send(SimpleMessage message) {
-        String messageInfo = "Error";
+        String messageInfo;
         try {
             messageInfo = objectMapper.writeValueAsString(message);
             rabbitTemplate.convertAndSend(exchange.getName(), routingKey, message);
         } catch (JsonProcessingException | AmqpException e) {
             LOGGER.error("{}", e.getMessage());
+            messageInfo = "Error";
         }
         LOGGER.info("send message -> {}", messageInfo);
         return messageInfo;
