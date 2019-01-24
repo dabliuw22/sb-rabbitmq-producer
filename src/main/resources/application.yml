@@ -12,7 +12,8 @@ spring:
     password: guest
 
 rabbitmq:
+  queue:
+    name: myFanoutQueue
   exchange:
-    name: myExchange
+    name: myFanoutExchange
     durable: true
-  routing-key: myRoutingKey.#

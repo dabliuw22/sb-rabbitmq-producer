@@ -7,7 +7,6 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,10 +18,6 @@ import com.leysoft.service.inter.SenderService;
 public class SenderServiceImp implements SenderService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SenderServiceImp.class);
-
-    @Value(
-            value = "${rabbitmq.routing-key}")
-    private String routingKey;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -38,7 +33,7 @@ public class SenderServiceImp implements SenderService {
         String messageInfo;
         try {
             messageInfo = objectMapper.writeValueAsString(message);
-            rabbitTemplate.convertAndSend(exchange.getName(), routingKey, message);
+            rabbitTemplate.convertAndSend(exchange.getName(), "", message);
         } catch (JsonProcessingException | AmqpException e) {
             LOGGER.error("{}", e.getMessage());
             messageInfo = "Error";

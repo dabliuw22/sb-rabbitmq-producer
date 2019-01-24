@@ -2,8 +2,10 @@
 package com.leysoft.configuration;
 
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.ExchangeBuilder;
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -33,6 +35,10 @@ public class RabbitMqConfiguration {
     private String rabbitPassword;
 
     @Value(
+            value = "${rabbitmq.queue.name}")
+    private String queueName;
+
+    @Value(
             value = "${rabbitmq.exchange.name}")
     private String exchangeName;
 
@@ -50,8 +56,15 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    public Exchange exchange() {
-        return ExchangeBuilder.topicExchange(exchangeName).durable(exchangeDurable).build();
+    public FanoutExchange exchange() {
+        FanoutExchange exchange = (FanoutExchange) ExchangeBuilder.fanoutExchange(exchangeName)
+                .durable(exchangeDurable).build();
+        return exchange;
+    }
+
+    @Bean
+    public Queue queue() {
+        return QueueBuilder.durable(queueName).build();
     }
 
     @Bean
