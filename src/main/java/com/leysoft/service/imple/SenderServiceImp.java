@@ -8,6 +8,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class SenderServiceImp implements SenderService {
     private Exchange exchange;
 
     @Override
+    @Transactional
     public String send(SimpleMessage message) {
         String messageInfo;
         try {

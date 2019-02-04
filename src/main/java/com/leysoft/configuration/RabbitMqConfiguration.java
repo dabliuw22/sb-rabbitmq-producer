@@ -9,6 +9,7 @@ import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +57,11 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
+    public RabbitTransactionManager rabbitTransactionManager(ConnectionFactory connectionFactory) {
+        return new RabbitTransactionManager(connectionFactory);
+    }
+
+    @Bean
     public FanoutExchange exchange() {
         FanoutExchange exchange = (FanoutExchange) ExchangeBuilder.fanoutExchange(exchangeName)
                 .durable(exchangeDurable).build();
@@ -77,6 +83,7 @@ public class RabbitMqConfiguration {
             MessageConverter messageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
+        rabbitTemplate.setChannelTransacted(true);
         return rabbitTemplate;
     }
 }
